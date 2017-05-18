@@ -3,5 +3,8 @@ language: go
 go:
   - master
 
+before_script:
+  - go get github.com/stretchr/testify/assert
+
 script:
   - make test

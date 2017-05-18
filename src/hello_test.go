@@ -1,15 +1,14 @@
 package hello
 
 import (
+	"github.com/stretchr/testify/assert"
 	"math"
 	"testing"
 )
 
 func TestHello(t *testing.T) {
 	str := GetHello()
-	if str != "Hello" {
-		t.Error("Expected 'Hello' but got", str)
-	}
+	assert.Equal(t, "Hello", str)
 }
 
 func TestAddInt(t *testing.T) {
