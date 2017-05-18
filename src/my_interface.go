@@ -30,3 +30,18 @@ func (f MyFloat1) Abs() float64 {
 func describe(a Abser) string {
 	return fmt.Sprintf("(%v, %T)", a, a)
 }
+
+func ThreeDots(a ...interface{}) []interface{} {
+	return a
+}
+
+func CountNoInterface(a ...interface{}) int {
+	return len(a)
+}
+
+func GetFromNoInterface(idx int, a ...interface{}) (interface{}, error) {
+	if idx >= len(a) {
+		return nil, fmt.Errorf("index %d does not exist", idx)
+	}
+	return a[idx], nil
+}

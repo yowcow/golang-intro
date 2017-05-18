@@ -1,6 +1,8 @@
 package hello
 
 import (
+	"fmt"
+	"github.com/stretchr/testify/assert"
 	"math"
 	"testing"
 )
@@ -49,4 +51,37 @@ func TestDescribeMyFloat1(t *testing.T) {
 	if description != expected {
 		t.Error("Expected", expected, "but got", description)
 	}
+}
+
+func TestTreeDots(t *testing.T) {
+	res := ThreeDots("hoge", "fuga", "foo", "bar")
+	assert.Equal(t, []interface{}{"hoge", "fuga", "foo", "bar"}, res)
+}
+
+func TestThreeDots2(t *testing.T) {
+	in := []interface{}{"hoge", "fuga"}
+	res := ThreeDots(in...)
+	assert.Equal(t, in, res)
+}
+
+func TestCountNoInterface(t *testing.T) {
+	count := CountNoInterface(1, "two", 3, "four")
+	assert.Equal(t, 4, count)
+}
+
+func TestGetFromNoInterface(t *testing.T) {
+	assert := assert.New(t)
+
+	res1, err1 := GetFromNoInterface(0, 1, "two", 3, "four")
+	res2, err2 := GetFromNoInterface(1, 1, "two", 3, "four")
+	res3, err3 := GetFromNoInterface(4, 1, "two", 3, "four")
+
+	assert.Equal(1, res1)
+	assert.Nil(err1)
+
+	assert.Equal("two", res2)
+	assert.Nil(err2)
+
+	assert.Nil(res3)
+	assert.EqualValues(fmt.Errorf("index 4 does not exist"), err3)
 }
