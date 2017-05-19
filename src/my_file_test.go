@@ -25,18 +25,22 @@ items:
 	assert.Equal([]byte(expected), b)
 }
 
+type MyDataItem struct {
+	Id   int    `json:"id"`
+	Name string `json:"name"`
+}
+
+type MyDataProps struct {
+	Foo int    `json:"foo"`
+	Bar string `json:"bar"`
+}
+
 type MyData struct {
-	Hoge  int    `json:"hoge"`
-	Fuga  string `json:"fuga"`
-	Items []struct {
-		Id   int    `json:"id"`
-		Name string `json:"name"`
-	} `json:"items"`
-	Props struct {
-		Foo int    `json:"foo"`
-		Bar string `json:"bar"`
-	} `json:"props"`
-	NonExisting string `json:"nonexisting"`
+	Hoge        int           `json:"hoge"`
+	Fuga        string        `json:"fuga"`
+	Items       []*MyDataItem `json:"items"`
+	Props       *MyDataProps  `json:"props"`
+	NonExisting string        `json:"nonexisting"`
 }
 
 func TestDecodeYaml(t *testing.T) {
@@ -64,20 +68,16 @@ func TestDecodeYaml(t *testing.T) {
 func TestEncodeYaml(t *testing.T) {
 	assert := assert.New(t)
 
+	dataItems := []*MyDataItem{
+		&MyDataItem{1, "foo"},
+		&MyDataItem{2, "bar"},
+	}
+	dataProps := &MyDataProps{111, "222"}
 	data := MyData{
-		Hoge: 123,
-		Fuga: "fuga",
-		Items: []struct {
-			Id   int    `json:"id"`
-			Name string `json:"name"`
-		}{
-			{1, "foo"},
-			{2, "bar"},
-		},
-		Props: struct {
-			Foo int    `json:"foo"`
-			Bar string `json:"bar"`
-		}{111, "222"},
+		Hoge:  123,
+		Fuga:  "fuga",
+		Items: dataItems,
+		Props: dataProps,
 	}
 
 	b, e := EncodeYaml(&data)
@@ -137,17 +137,11 @@ func TestEncodeJson(t *testing.T) {
 	data := MyData{
 		Hoge: 123,
 		Fuga: "fuga",
-		Items: []struct {
-			Id   int    `json:"id"`
-			Name string `json:"name"`
-		}{
-			{1, "foo"},
-			{2, "bar"},
+		Items: []*MyDataItem{
+			&MyDataItem{1, "foo"},
+			&MyDataItem{2, "bar"},
 		},
-		Props: struct {
-			Foo int    `json:"foo"`
-			Bar string `json:"bar"`
-		}{111, "222"},
+		Props: &MyDataProps{111, "222"},
 	}
 
 	b, e := EncodeJson(&data)
