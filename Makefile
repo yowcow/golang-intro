@@ -1,6 +1,10 @@
 .PHONY: test
 
-all:
+all: Gomfile
+	gom install
+
+Gomfile:
+	gom gen gomfile
 
 test:
-	go test -v ./src
+	gom test -v ./src

@@ -85,3 +85,13 @@ func TestGetFromNoInterface(t *testing.T) {
 	assert.Nil(res3)
 	assert.EqualValues(fmt.Errorf("index 4 does not exist"), err3)
 }
+
+func TestNewPerson(t *testing.T) {
+	assert := assert.New(t)
+
+	p := NewPerson(123, "hoge")
+
+	assert.Equal(123, p.GetId())
+	assert.Equal("hoge", p.GetName())
+	assert.Equal("Hi, I'm hoge (ID: 123)", fmt.Sprintf("%s", p))
+}

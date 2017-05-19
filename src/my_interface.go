@@ -45,3 +45,31 @@ func GetFromNoInterface(idx int, a ...interface{}) (interface{}, error) {
 	}
 	return a[idx], nil
 }
+
+type Person struct {
+	ID   int
+	Name string
+}
+
+type PersonInterface interface {
+	GetId() int
+	GetName() string
+	String() string
+}
+
+func NewPerson(id int, name string) PersonInterface {
+	person := Person{id, name}
+	return person
+}
+
+func (p Person) GetId() int {
+	return p.ID
+}
+
+func (p Person) GetName() string {
+	return p.Name
+}
+
+func (p Person) String() string {
+	return fmt.Sprintf("Hi, I'm %s (ID: %d)", p.GetName(), p.GetId())
+}
