@@ -1,0 +1,18 @@
+package hello
+
+import (
+	"gopkg.in/yaml.v2"
+	"io/ioutil"
+)
+
+func GetFileContent(filename string) ([]byte, error) {
+	return ioutil.ReadFile(filename)
+}
+
+func DecodeYaml(in []byte, out interface{}) error {
+	return yaml.Unmarshal(in, out)
+}
+
+func EncodeYaml(in interface{}) ([]byte, error) {
+	return yaml.Marshal(in)
+}
