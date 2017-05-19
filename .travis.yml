@@ -1,10 +1,8 @@
 language: go
-
 go:
-  - master
-
-before_script:
-  - go get github.com/stretchr/testify/assert
-
+  - tip
+before_install:
+  - go get github.com/mattn/gom
 script:
-  - make test
+  - $HOME/gopath/bin/gom install
+  - $HOME/gopath/bin/gom test -v ./src

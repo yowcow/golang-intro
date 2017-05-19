@@ -1,0 +1,2 @@
+gom 'github.com/stretchr/testify', :commit => '4d4bfba8f1d1027c4fdbe371823030df51419987'
+gom 'gopkg.in/yaml.v2', :commit => 'a5b47d31c556af34a302ce5d659e6fea44d90de0'
