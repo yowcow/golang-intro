@@ -19,19 +19,19 @@ func sumArray(a []int) int {
 	return r
 }
 
+func sumArrayRunner(ch chan int, in []int) {
+	res := sumArray(in)
+	ch <- res
+}
+
 func TestSimpleSum(t *testing.T) {
 	assert := assert.New(t)
-
-	doSumArray := func(ch chan int, in []int) {
-		res := sumArray(in)
-		ch <- res
-	}
 
 	chan1 := make(chan int)
 	chan2 := make(chan int)
 
-	go doSumArray(chan1, []int{1, 2, 3, 4, 5})
-	go doSumArray(chan2, []int{2, 3, 4, 5, 6})
+	go sumArrayRunner(chan1, []int{1, 2, 3, 4, 5})
+	go sumArrayRunner(chan2, []int{2, 3, 4, 5, 6})
 
 	assert.Equal(15, <-chan1)
 	assert.Equal(20, <-chan2)
@@ -40,25 +40,28 @@ func TestSimpleSum(t *testing.T) {
 func TestSumLocked(t *testing.T) {
 	assert := assert.New(t)
 
-	doSumArray := func(ch chan int, m *sync.Mutex, in []int) {
-		m.Lock()
-		defer m.Unlock()
-
+	sumArrayWaited := func(ch chan int, w *sync.WaitGroup, in []int) {
 		res := sumArray(in)
 		ch <- res
+		w.Done()
 	}
 
-	c := make(chan int, 1)
-	m := new(sync.Mutex)
+	c := make(chan int, 2)
+	wg := &sync.WaitGroup{}
 
-	go doSumArray(c, m, []int{1, 2, 3, 4, 5})
-	res1 := <-c
+	wg.Add(1)
+	go sumArrayWaited(c, wg, []int{1, 2, 3, 4, 5})
+	wg.Wait()
 
-	go doSumArray(c, m, []int{2, 3, 4, 5, 6})
-	res2 := <-c
+	wg.Add(1)
+	go sumArrayWaited(c, wg, []int{2, 3, 4, 5, 6})
+	wg.Wait()
 
-	assert.Equal(15, res1)
-	assert.Equal(20, res2)
+	ret1 := <-c
+	ret2 := <-c
+
+	assert.Equal(15, ret1)
+	assert.Equal(20, ret2)
 }
 
 func fib(c, q chan int) {
@@ -88,11 +91,10 @@ func TestReceiverToQuitSender(t *testing.T) {
 	c := make(chan int)
 	q := make(chan int)
 	r := make(chan []int)
-	ret := []int{}
 
 	go fibRunner(c, q, r)
 	fib(c, q)
-	ret = <-r
+	ret := <-r
 
 	assert.EqualValues([]int{0, 1, 1, 2, 3, 5, 8, 13, 21, 34}, ret)
 }
