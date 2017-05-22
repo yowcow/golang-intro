@@ -73,56 +73,56 @@ func fib(c, q chan int) {
 	}
 }
 
+func fibRunner(c, q chan int, r chan []int) {
+	result := []int{}
+	for i := 0; i < 10; i++ {
+		result = append(result, <-c)
+	}
+	q <- 0
+	r <- result
+}
+
 func TestReceiverToQuitSender(t *testing.T) {
 	assert := assert.New(t)
 
 	c := make(chan int)
 	q := make(chan int)
+	r := make(chan []int)
 	ret := []int{}
 
-	wg := &sync.WaitGroup{}
-	wg.Add(1)
-
-	go func() {
-		for i := 0; i < 10; i++ {
-			ret = append(ret, <-c)
-		}
-		q <- 0
-		wg.Done()
-	}()
-
+	go fibRunner(c, q, r)
 	fib(c, q)
-	wg.Wait()
+	ret = <-r
 
 	assert.EqualValues([]int{0, 1, 1, 2, 3, 5, 8, 13, 21, 34}, ret)
+}
+
+func boomAfterTick(c chan []string) {
+	tick := time.Tick(100 * time.Millisecond)
+	boom := time.After(300 * time.Millisecond)
+	ret := []string{}
+
+	for {
+		select {
+		case <-tick:
+			ret = append(ret, "tick")
+		case <-boom:
+			c <- append(ret, "boom")
+		default:
+			ret = append(ret, ".")
+			time.Sleep(50 * time.Millisecond)
+		}
+	}
 }
 
 func TestBoomAfterTick(t *testing.T) {
 	assert := assert.New(t)
 
-	tick := time.Tick(100 * time.Millisecond)
-	boom := time.After(300 * time.Millisecond)
-	ret := []string{}
+	ch := make(chan []string)
 
-	wg := &sync.WaitGroup{}
-	wg.Add(1)
+	go boomAfterTick(ch)
 
-	go func() {
-		for {
-			select {
-			case <-tick:
-				ret = append(ret, "tick")
-			case <-boom:
-				ret = append(ret, "boom")
-				wg.Done()
-			default:
-				ret = append(ret, ".")
-				time.Sleep(50 * time.Millisecond)
-			}
-		}
-	}()
-
-	wg.Wait()
+	ret := <-ch
 
 	assert.True(9 <= len(ret))
 }
