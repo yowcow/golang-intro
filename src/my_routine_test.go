@@ -37,7 +37,7 @@ func TestSimpleSum(t *testing.T) {
 	assert.Equal(20, <-chan2)
 }
 
-func TestSumLocked(t *testing.T) {
+func TestSumWaited(t *testing.T) {
 	assert := assert.New(t)
 
 	sumArrayWaited := func(ch chan int, w *sync.WaitGroup, in []int) {
@@ -127,4 +127,41 @@ func TestBoomAfterTick(t *testing.T) {
 	ret := <-ch
 
 	assert.True(9 <= len(ret))
+}
+
+func incrementPtr(name string, counter *int, count int, mx *sync.Mutex, wg *sync.WaitGroup) {
+	incr := func() {
+		mx.Lock()
+		defer mx.Unlock()
+
+		c := *counter
+		time.Sleep(100 * time.Millisecond)
+		*counter = c + 1
+	}
+
+	for i := 0; i < count; i++ {
+		incr()
+		fmt.Printf("(%s) counter is now %d\n", name, *counter)
+	}
+
+	wg.Done()
+}
+
+func TestIncrementLocked(t *testing.T) {
+	assert := assert.New(t)
+
+	counter := 0
+
+	mx := &sync.Mutex{}
+	wg := &sync.WaitGroup{}
+
+	wg.Add(1)
+	go incrementPtr("worker1", &counter, 5, mx, wg)
+
+	wg.Add(1)
+	go incrementPtr("worker2", &counter, 5, mx, wg)
+
+	wg.Wait()
+
+	assert.Equal(10, counter)
 }
