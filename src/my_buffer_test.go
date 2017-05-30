@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"github.com/stretchr/testify/assert"
 	"io"
+	"io/ioutil"
+	"os"
 	"sync"
 	"testing"
 )
@@ -59,4 +61,23 @@ func TestBufferPool(t *testing.T) {
 	myWrite(outBuf)
 
 	assert.Equal("ほげ ふが ほげ ふが ほげ ふが ", string(outBuf.Bytes()))
+}
+
+func TestWriteBufferToFile(t *testing.T) {
+	assert := assert.New(t)
+
+	f, e := ioutil.TempFile("", "test")
+	defer os.Remove(f.Name())
+
+	assert.Equal(nil, e)
+
+	myWrite(f)
+	myWrite(f)
+	myWrite(f)
+
+	assert.Equal(nil, f.Close())
+
+	content, e := GetFileContent(f.Name())
+
+	assert.Equal("ほげ ふが ほげ ふが ほげ ふが ", string(content))
 }
