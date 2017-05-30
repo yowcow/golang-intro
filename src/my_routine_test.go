@@ -165,3 +165,35 @@ func TestIncrementLocked(t *testing.T) {
 
 	assert.Equal(10, counter)
 }
+
+func TestOnce(t *testing.T) {
+	assert := assert.New(t)
+	counter := 0
+
+	incr := func() {
+		counter += 1
+	}
+
+	once1 := &sync.Once{}
+
+	once1.Do(incr)
+	once1.Do(incr)
+
+	assert.Equal(1, counter)
+
+	once2 := &sync.Once{}
+
+	wg := &sync.WaitGroup{}
+
+	for i := 0; i < 10; i++ {
+		wg.Add(1)
+		go func() {
+			once2.Do(incr)
+			wg.Done()
+		}()
+	}
+
+	wg.Wait()
+
+	assert.Equal(2, counter)
+}
