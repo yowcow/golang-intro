@@ -6,9 +6,9 @@ all: Gomfile
 Gomfile:
 	gom gen gomfile
 
-SUCCESS := \033[1;32m
-FAILURE := \033[1;31m
-RESET   := \033[m
+SUCCESS := \e[1;32m
+FAILURE := \e[1;31m
+RESET   := \e[m
 
 test:
 	gom test -v ./src \
