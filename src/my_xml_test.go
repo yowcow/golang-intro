@@ -81,3 +81,61 @@ func TestParseRss(t *testing.T) {
 	assert.Equal(time.Month(5), m)
 	assert.Equal(28, d)
 }
+
+func TestGenerateXml(t *testing.T) {
+	assert := assert.New(t)
+
+	type RssItem struct {
+		XMLName xml.Name `xml:"item"`
+		Title   string   `xml:"title"`
+		Link    string   `xml:"link"`
+	}
+	type RssChannel struct {
+		XMLName     xml.Name `xml:"channel"`
+		About       string   `xml:"rdf:about,attr"`
+		Title       string   `xml:"title"`
+		Description string   `xml:"description"`
+		Items       []*RssItem
+	}
+	type Rss struct {
+		XMLName xml.Name `xml:"rss"`
+		Version string   `xml:"version,attr"`
+		Channel *RssChannel
+	}
+
+	item1 := &RssItem{
+		Title: "あああ",
+		Link:  "http://hogefuga",
+	}
+	item2 := &RssItem{
+		Title: "いいい",
+		Link:  "http://foobar",
+	}
+	channel := &RssChannel{
+		About:       "http://foo.bar",
+		Title:       "ほげ",
+		Description: "せつめいぶん",
+		Items:       []*RssItem{item1, item2},
+	}
+	rss := &Rss{
+		Channel: channel,
+		Version: "2.0",
+	}
+
+	output, _ := xml.MarshalIndent(rss, "", "  ")
+
+	assert.Equal(`<rss version="2.0">
+  <channel rdf:about="http://foo.bar">
+    <title>ほげ</title>
+    <description>せつめいぶん</description>
+    <item>
+      <title>あああ</title>
+      <link>http://hogefuga</link>
+    </item>
+    <item>
+      <title>いいい</title>
+      <link>http://foobar</link>
+    </item>
+  </channel>
+</rss>`, string(output))
+}
