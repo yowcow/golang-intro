@@ -2,6 +2,9 @@ package hello
 
 import (
 	"github.com/stretchr/testify/assert"
+	"io"
+	"io/ioutil"
+	"os"
 	"testing"
 )
 
@@ -149,4 +152,29 @@ func TestEncodeJson(t *testing.T) {
 	expected := `{"hoge":123,"fuga":"fuga","items":[{"id":1,"name":"foo"},{"id":2,"name":"bar"}],"props":{"foo":111,"bar":"222"},"nonexisting":""}`
 	assert.Nil(e)
 	assert.Equal(expected, string(b))
+}
+
+func TestFileCopy(t *testing.T) {
+	assert := assert.New(t)
+
+	dir, e := ioutil.TempDir("", "hoge")
+	assert.Nil(e)
+
+	defer os.RemoveAll(dir)
+
+	fout, e := os.Create(dir + "/test.data")
+	assert.Nil(e)
+
+	fin, e := os.Open("../data/hoge.txt")
+	assert.Nil(e)
+
+	io.Copy(fout, fin)
+
+	fout.Close()
+	fin.Close()
+
+	actual, _ := ioutil.ReadFile(dir + "/test.data")
+	expected, _ := ioutil.ReadFile("../data/hoge.txt")
+
+	assert.Equal(expected, actual)
 }
