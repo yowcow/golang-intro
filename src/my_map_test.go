@@ -40,3 +40,17 @@ func TestMapOfMaps(t *testing.T) {
 	assert.Equal(1, m["apple"]["apple"])
 	assert.Equal(2, m["banana"]["banana"])
 }
+
+func TestMapKeyLength(t *testing.T) {
+	assert := assert.New(t)
+
+	data := map[string]interface{}{}
+	data["a"] = 1
+	data["b"] = "2"
+	data["c"] = 3.0
+
+	assert.Equal(3, len(data))
+	assert.Equal(data["a"], 1)
+	assert.Equal(data["b"], "2")
+	assert.Equal(data["c"], float64(3))
+}
