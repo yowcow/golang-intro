@@ -45,6 +45,9 @@ func TestMapKeyLength(t *testing.T) {
 	assert := assert.New(t)
 
 	data := map[string]interface{}{}
+
+	assert.Equal(0, len(data))
+
 	data["a"] = 1
 	data["b"] = "2"
 	data["c"] = 3.0
