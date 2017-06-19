@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"regexp"
+	"sync"
 	"testing"
 )
 
@@ -70,4 +71,50 @@ func TestGinAppRequest(t *testing.T) {
 	assert.Regexp(re, result.Header["Content-Type"][0])
 	assert.Equal("foobar", resData.Name)
 	assert.Equal(200, resData.Status)
+}
+
+func startRealHttpServer(addr string, wg *sync.WaitGroup, ch <-chan struct{}) {
+	srvmux := &http.ServeMux{}
+	srvmux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, "Hi, I love %s!", r.URL.Path[1:])
+	})
+	server := &http.Server{
+		Addr:    addr,
+		Handler: srvmux,
+	}
+
+	defer func() {
+		fmt.Println("Server is closing")
+		server.Close()
+		wg.Done()
+	}()
+
+	go func() {
+		server.ListenAndServe()
+	}()
+
+	fmt.Println("Server is listening")
+
+	for _ = range ch {
+	}
+}
+
+func TestRealHttpRequest(t *testing.T) {
+	wg := &sync.WaitGroup{}
+	ch := make(chan struct{})
+
+	wg.Add(1)
+	go startRealHttpServer(":8899", wg, ch)
+
+	client := &http.Client{}
+	req, _ := http.NewRequest("GET", "http://localhost:8899/foo/bar", nil)
+	res, _ := client.Do(req)
+
+	close(ch)
+	wg.Wait()
+
+	body, _ := ioutil.ReadAll(res.Body)
+
+	assert.Equal(t, 200, res.StatusCode)
+	assert.Equal(t, "Hi, I love foo/bar!", string(body))
 }
