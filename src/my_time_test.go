@@ -44,6 +44,22 @@ func TestAddDuration(t *testing.T) {
 	assert.Equal("2000-01-01T00:10:00+09:00", tm2.Format(time.RFC3339))
 }
 
+func TestSleep(t *testing.T) {
+	assert := assert.New(t)
+
+	ok := false
+	ch := make(chan bool)
+
+	go func(q chan<- bool) {
+		time.Sleep(100 * time.Millisecond)
+		q <- true
+	}(ch)
+
+	ok = <-ch
+
+	assert.True(ok)
+}
+
 func TestAfter(t *testing.T) {
 	assert := assert.New(t)
 
