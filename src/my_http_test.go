@@ -62,8 +62,8 @@ func TestGinAppRequest(t *testing.T) {
 		Status int    `json:"status"`
 	}{}
 
-	body, _ := ioutil.ReadAll(result.Body)
-	json.Unmarshal(body, &resData)
+	decoder := json.NewDecoder(w.Body)
+	decoder.Decode(&resData)
 
 	re := regexp.MustCompile("^application/json;(?:\\s.+)?")
 
