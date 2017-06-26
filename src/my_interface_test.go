@@ -116,15 +116,15 @@ type HogeThing struct {
 }
 
 func newHogeThing() HogeThinger {
-	return HogeThing{&bytes.Buffer{}}
+	return &HogeThing{&bytes.Buffer{}}
 }
-func (h HogeThing) Write(s string) {
+func (h *HogeThing) Write(s string) {
 	h.buffer.WriteString(s)
 }
-func (h HogeThing) Read() string {
+func (h *HogeThing) Read() string {
 	return h.buffer.String()
 }
-func (h HogeThing) Reset() {
+func (h *HogeThing) Reset() {
 	h.buffer.Reset()
 }
 
