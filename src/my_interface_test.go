@@ -1,6 +1,7 @@
 package hello
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/stretchr/testify/assert"
 	"math"
@@ -94,4 +95,52 @@ func TestNewPerson(t *testing.T) {
 	assert.Equal(123, p.GetId())
 	assert.Equal("hoge", p.GetName())
 	assert.Equal("Hi, I'm hoge (ID: 123)", fmt.Sprintf("%s", p))
+}
+
+type HogeWriter interface {
+	Write(string)
+}
+type HogeReader interface {
+	Read() string
+}
+type HogeResetter interface {
+	Reset()
+}
+type HogeThinger interface {
+	HogeWriter
+	HogeReader
+	HogeResetter
+}
+type HogeThing struct {
+	buffer *bytes.Buffer
+}
+
+func newHogeThing() HogeThinger {
+	return HogeThing{&bytes.Buffer{}}
+}
+func (h HogeThing) Write(s string) {
+	h.buffer.WriteString(s)
+}
+func (h HogeThing) Read() string {
+	return h.buffer.String()
+}
+func (h HogeThing) Reset() {
+	h.buffer.Reset()
+}
+
+func TestMultipleInterfaces(t *testing.T) {
+	assert := assert.New(t)
+
+	hoge := newHogeThing()
+
+	hoge.Write("hoge")
+	hoge.Write("fuga")
+	hoge.Write("ほげ")
+	hoge.Write("ふが")
+
+	assert.Equal("hogefugaほげふが", hoge.Read())
+
+	hoge.Reset()
+
+	assert.Equal("", hoge.Read())
 }
