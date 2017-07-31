@@ -3,14 +3,15 @@ package hello
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/stretchr/testify/assert"
-	"gopkg.in/gin-gonic/gin.v1"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"regexp"
 	"sync"
 	"testing"
+
+	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestSimpleHttpRequest(t *testing.T) {

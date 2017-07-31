@@ -1,10 +1,8 @@
 .PHONY: test
 
-all: Gomfile
-	gom install
-
-Gomfile:
-	gom gen gomfile
+all:
+	rm -rf ./vendor ./Godeps
+	godep save -v ./src/...
 
 test:
-	gom test -v ./src
+	go test -v ./src/...
