@@ -1,7 +1,6 @@
 package hello
 
 import (
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"net/http/httputil"
@@ -26,12 +25,17 @@ func TestHTTPRequestOut(t *testing.T) {
 }
 
 func TestHTTPRequest(t *testing.T) {
-	re := regexp.MustCompile("POST / HTTP/1.1\r\nHost: 127.0.0.1:\\d+\r\nAccept-Encoding: gzip\r\nContent-Length: 39\r\nUser-Agent: HogeFuga/0.1\r\n\r\nfuga-key=fuga-value&hoge-key=hoge-value")
+	reqRe := regexp.MustCompile("POST / HTTP/1.1\r\nHost: 127.0.0.1:\\d+\r\nAccept-Encoding: gzip\r\nContent-Length: 39\r\nUser-Agent: HogeFuga/0.1\r\n\r\nfuga-key=fuga-value&hoge-key=hoge-value")
+	respRe := regexp.MustCompile("HTTP/1.1 200 OK\r\nContent-Length: 12\r\nContent-Type: text/plain; charset=utf-8\r\nDate: .+ GMT\r\nFuga: fuga\r\nHoge: hoge\r\n\r\nこんちは")
 
 	handler := http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		dump, _ := httputil.DumpRequest(req, true)
 
-		assert.True(t, re.Match(dump))
+		assert.True(t, reqRe.Match(dump))
+
+		header := w.Header()
+		header.Add("Hoge", "hoge")
+		header.Add("Fuga", "fuga")
 
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("こんちは"))
@@ -48,9 +52,7 @@ func TestHTTPRequest(t *testing.T) {
 
 	client := http.Client{}
 	resp, _ := client.Do(req)
+	dump, _ := httputil.DumpResponse(resp, true)
 
-	respBody, _ := ioutil.ReadAll(resp.Body)
-
-	assert.Equal(t, 200, resp.StatusCode)
-	assert.Equal(t, "こんちは", string(respBody))
+	assert.True(t, respRe.Match(dump))
 }
