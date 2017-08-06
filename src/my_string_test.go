@@ -1,9 +1,10 @@
 package hello
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
 	"unicode/utf8"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func partialString(s string, from, to int) string {
@@ -66,4 +67,24 @@ func TestStringByteRune(t *testing.T) {
 	assert.Equal(res[5].S, 3)
 	assert.Equal(res[6].R, '語')
 	assert.Equal(res[6].S, 3)
+}
+
+func reverseByte(b []byte) []byte {
+	len := len(b)
+	res := make([]byte, len)
+	for i, v := range b {
+		res[len-i-1] = v
+	}
+	return res
+}
+
+func reverseString(s string) string {
+	return string(reverseByte([]byte(s)))
+}
+
+func TestReverseString(t *testing.T) {
+	src := "hogefuga"
+	res := reverseString(src)
+
+	assert.Equal(t, "agufegoh", res)
 }
