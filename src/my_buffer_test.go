@@ -1,6 +1,7 @@
 package hello
 
 import (
+	"bufio"
 	"bytes"
 	"github.com/stretchr/testify/assert"
 	"io"
@@ -80,4 +81,18 @@ func TestWriteBufferToFile(t *testing.T) {
 	content, e := GetFileContent(f.Name())
 
 	assert.Equal("ほげ ふが ほげ ふが ほげ ふが ", string(content))
+}
+
+func TestBufferedIO(t *testing.T) {
+	buf := bytes.Buffer{}
+	w := bufio.NewWriter(&buf)
+
+	w.WriteString("ほげ")
+	w.Write([]byte("ふが"))
+
+	assert.Equal(t, "", buf.String())
+
+	w.Flush()
+
+	assert.Equal(t, "ほげふが", buf.String())
 }
