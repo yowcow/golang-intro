@@ -92,7 +92,7 @@ func TestNewPerson(t *testing.T) {
 
 	p := NewPerson(123, "hoge")
 
-	assert.Equal(123, p.GetId())
+	assert.Equal(123, p.GetID())
 	assert.Equal("hoge", p.GetName())
 	assert.Equal("Hi, I'm hoge (ID: 123)", fmt.Sprintf("%s", p))
 }

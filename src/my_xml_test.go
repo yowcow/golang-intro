@@ -12,12 +12,12 @@ func slurpFile(filename string) ([]byte, error) {
 	return ioutil.ReadFile(filename)
 }
 
-func TestParseSimpleXml(t *testing.T) {
+func TestParseSimpleXML(t *testing.T) {
 	assert := assert.New(t)
 
-	myXml := []byte(`
+	myXML := []byte(`
 	<Person>
-	  <Id>123</Id>
+	  <ID>123</ID>
 	  <Name>
 	    <First>Hoge</First>
 	    <Last>Fuga</Last>
@@ -30,39 +30,39 @@ func TestParseSimpleXml(t *testing.T) {
 		Last  string `xml:"Last"`
 	}
 	type Person struct {
-		Id   int         `xml:"Id"`
+		ID   int         `xml:"ID"`
 		Name *PersonName `xml:"Name"`
 	}
 
 	p := Person{}
-	xml.Unmarshal(myXml, &p)
+	xml.Unmarshal(myXML, &p)
 
-	assert.Equal(123, p.Id)
+	assert.Equal(123, p.ID)
 	assert.Equal("Hoge", p.Name.First)
 	assert.Equal("Fuga", p.Name.Last)
 }
 
-func TestParseRss(t *testing.T) {
+func TestParseRSS(t *testing.T) {
 	assert := assert.New(t)
 
-	myXml, _ := slurpFile("../data/rss.rdf")
+	myXML, _ := slurpFile("../data/rss.rdf")
 
-	type RssChannel struct {
+	type RSSChannel struct {
 		Title string `xml:"title"`
 		About string `xml:"about,attr"`
 	}
-	type RssItem struct {
+	type RSSItem struct {
 		Title string `xml:"title"`
 		Link  string `xml:"link"`
 		Date  string `xml:"date"`
 	}
-	type Rss struct {
-		Channel *RssChannel `xml:"channel"`
-		Items   []*RssItem  `xml:"item"`
+	type RSS struct {
+		Channel *RSSChannel `xml:"channel"`
+		Items   []*RSSItem  `xml:"item"`
 	}
 
-	rss := Rss{}
-	xml.Unmarshal(myXml, &rss)
+	rss := RSS{}
+	xml.Unmarshal(myXML, &rss)
 
 	assert.Equal("痛いニュース(ﾉ∀`)", rss.Channel.Title)
 	assert.Equal("http://blog.livedoor.jp/dqnplus/", rss.Channel.About)
@@ -82,42 +82,42 @@ func TestParseRss(t *testing.T) {
 	assert.Equal(28, d)
 }
 
-func TestGenerateXml(t *testing.T) {
+func TestGenerateXML(t *testing.T) {
 	assert := assert.New(t)
 
-	type RssItem struct {
+	type RSSItem struct {
 		XMLName xml.Name `xml:"item"`
 		Title   string   `xml:"title"`
 		Link    string   `xml:"link"`
 	}
-	type RssChannel struct {
+	type RSSChannel struct {
 		XMLName     xml.Name `xml:"channel"`
 		About       string   `xml:"rdf:about,attr"`
 		Title       string   `xml:"title"`
 		Description string   `xml:"description"`
-		Items       []*RssItem
+		Items       []*RSSItem
 	}
-	type Rss struct {
+	type RSS struct {
 		XMLName xml.Name `xml:"rss"`
 		Version string   `xml:"version,attr"`
-		Channel *RssChannel
+		Channel *RSSChannel
 	}
 
-	item1 := &RssItem{
+	item1 := &RSSItem{
 		Title: "あああ",
 		Link:  "http://hogefuga",
 	}
-	item2 := &RssItem{
+	item2 := &RSSItem{
 		Title: "いいい",
 		Link:  "http://foobar",
 	}
-	channel := &RssChannel{
+	channel := &RSSChannel{
 		About:       "http://foo.bar",
 		Title:       "ほげ",
 		Description: "せつめいぶん",
-		Items:       []*RssItem{item1, item2},
+		Items:       []*RSSItem{item1, item2},
 	}
-	rss := &Rss{
+	rss := &RSS{
 		Channel: channel,
 		Version: "2.0",
 	}

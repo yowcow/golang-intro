@@ -29,7 +29,7 @@ items:
 }
 
 type MyDataItem struct {
-	Id   int    `json:"id"`
+	ID   int    `json:"id"`
 	Name string `json:"name"`
 }
 
@@ -46,29 +46,29 @@ type MyData struct {
 	NonExisting string        `json:"nonexisting"`
 }
 
-func TestDecodeYaml(t *testing.T) {
+func TestDecodeYAML(t *testing.T) {
 	assert := assert.New(t)
 
 	var data MyData
 
 	b, err := GetFileContent("../data/hoge.txt")
-	err = DecodeYaml(b, &data)
+	err = DecodeYAML(b, &data)
 
 	assert.Nil(err)
 	assert.Equal(123, data.Hoge)
 	assert.Equal("fuga", data.Fuga)
 	assert.Equal("", data.NonExisting)
 
-	assert.Equal(1, data.Items[0].Id)
+	assert.Equal(1, data.Items[0].ID)
 	assert.Equal("foo", data.Items[0].Name)
-	assert.Equal(2, data.Items[1].Id)
+	assert.Equal(2, data.Items[1].ID)
 	assert.Equal("bar", data.Items[1].Name)
 
 	assert.Equal(111, data.Props.Foo)
 	assert.Equal("222", data.Props.Bar)
 }
 
-func TestEncodeYaml(t *testing.T) {
+func TestEncodeYAML(t *testing.T) {
 	assert := assert.New(t)
 
 	dataItems := []*MyDataItem{
@@ -83,7 +83,7 @@ func TestEncodeYaml(t *testing.T) {
 		Props: dataProps,
 	}
 
-	b, e := EncodeYaml(&data)
+	b, e := EncodeYAML(&data)
 
 	expected := `hoge: 123
 fuga: fuga
@@ -101,7 +101,7 @@ nonexisting: ""
 	assert.Equal(expected, string(b))
 }
 
-func TestDecodeJson(t *testing.T) {
+func TestDecodeJSON(t *testing.T) {
 	assert := assert.New(t)
 
 	data := MyData{}
@@ -118,23 +118,23 @@ func TestDecodeJson(t *testing.T) {
 	]
 	}`)
 
-	err := DecodeJson(b, &data)
+	err := DecodeJSON(b, &data)
 
 	assert.Nil(err)
 	assert.Equal(123, data.Hoge)
 	assert.Equal("fuga", data.Fuga)
 	assert.Equal("", data.NonExisting)
 
-	assert.Equal(1, data.Items[0].Id)
+	assert.Equal(1, data.Items[0].ID)
 	assert.Equal("foo", data.Items[0].Name)
-	assert.Equal(2, data.Items[1].Id)
+	assert.Equal(2, data.Items[1].ID)
 	assert.Equal("bar", data.Items[1].Name)
 
 	assert.Equal(111, data.Props.Foo)
 	assert.Equal("222", data.Props.Bar)
 }
 
-func TestEncodeJson(t *testing.T) {
+func TestEncodeJSON(t *testing.T) {
 	assert := assert.New(t)
 
 	data := MyData{
@@ -147,7 +147,7 @@ func TestEncodeJson(t *testing.T) {
 		Props: &MyDataProps{111, "222"},
 	}
 
-	b, e := EncodeJson(&data)
+	b, e := EncodeJSON(&data)
 
 	expected := `{"hoge":123,"fuga":"fuga","items":[{"id":1,"name":"foo"},{"id":2,"name":"bar"}],"props":{"foo":111,"bar":"222"},"nonexisting":""}`
 	assert.Nil(e)

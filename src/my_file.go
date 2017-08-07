@@ -10,18 +10,18 @@ func GetFileContent(filename string) ([]byte, error) {
 	return ioutil.ReadFile(filename)
 }
 
-func DecodeYaml(in []byte, out interface{}) error {
+func DecodeYAML(in []byte, out interface{}) error {
 	return yaml.Unmarshal(in, out)
 }
 
-func EncodeYaml(in interface{}) ([]byte, error) {
+func EncodeYAML(in interface{}) ([]byte, error) {
 	return yaml.Marshal(in)
 }
 
-func DecodeJson(in []byte, out interface{}) error {
+func DecodeJSON(in []byte, out interface{}) error {
 	return json.Unmarshal(in, out)
 }
 
-func EncodeJson(in interface{}) ([]byte, error) {
+func EncodeJSON(in interface{}) ([]byte, error) {
 	return json.Marshal(in)
 }

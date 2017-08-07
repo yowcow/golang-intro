@@ -52,7 +52,7 @@ type Person struct {
 }
 
 type PersonInterface interface {
-	GetId() int
+	GetID() int
 	GetName() string
 	String() string
 }
@@ -62,7 +62,7 @@ func NewPerson(id int, name string) PersonInterface {
 	return person
 }
 
-func (p Person) GetId() int {
+func (p Person) GetID() int {
 	return p.ID
 }
 
@@ -71,5 +71,5 @@ func (p Person) GetName() string {
 }
 
 func (p Person) String() string {
-	return fmt.Sprintf("Hi, I'm %s (ID: %d)", p.GetName(), p.GetId())
+	return fmt.Sprintf("Hi, I'm %s (ID: %d)", p.GetName(), p.GetID())
 }

@@ -171,7 +171,7 @@ func TestOnce(t *testing.T) {
 	counter := 0
 
 	incr := func() {
-		counter += 1
+		counter++
 	}
 
 	once1 := &sync.Once{}

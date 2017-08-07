@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestSimpleHttpRequest(t *testing.T) {
+func TestSimpleHTTPRequest(t *testing.T) {
 	assert := assert.New(t)
 
 	mySimpleHandler := func(w http.ResponseWriter, r *http.Request) {
@@ -74,7 +74,7 @@ func TestGinAppRequest(t *testing.T) {
 	assert.Equal(200, resData.Status)
 }
 
-func startRealHttpServer(addr string, wg *sync.WaitGroup, ch <-chan struct{}) {
+func startRealHTTPServer(addr string, wg *sync.WaitGroup, ch <-chan struct{}) {
 	srvmux := &http.ServeMux{}
 	srvmux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Hi, I love %s!", r.URL.Path[1:])
@@ -100,12 +100,12 @@ func startRealHttpServer(addr string, wg *sync.WaitGroup, ch <-chan struct{}) {
 	}
 }
 
-func TestRealHttpRequest(t *testing.T) {
+func TestRealHTTPRequest(t *testing.T) {
 	wg := &sync.WaitGroup{}
 	ch := make(chan struct{})
 
 	wg.Add(1)
-	go startRealHttpServer(":8899", wg, ch)
+	go startRealHTTPServer(":8899", wg, ch)
 
 	client := &http.Client{}
 	req, _ := http.NewRequest("GET", "http://localhost:8899/foo/bar", nil)

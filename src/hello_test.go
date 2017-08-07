@@ -80,8 +80,11 @@ func TestVertexPtrScale(t *testing.T) {
 }
 
 func TestMyFloatAbs(t *testing.T) {
+	var result float64
+
 	f := MyFloat(-math.Sqrt2)
-	var result float64 = f.Abs()
+	result = f.Abs()
+
 	if result != math.Sqrt2 {
 		t.Error("Expected math.Sqrt2 but got", result)
 	}
