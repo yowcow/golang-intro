@@ -2,12 +2,15 @@ package myecho
 
 import (
 	"bytes"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"strings"
 	"testing"
 
 	"github.com/labstack/echo"
+	"github.com/labstack/gommon/log"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -133,4 +136,35 @@ func TestElasticMiddleware(t *testing.T) {
 
 	assert.Equal(t, 200, w.Code)
 	assert.Equal(t, "hogefuga", w.Body.String())
+}
+
+func TestErrorLogging(t *testing.T) {
+	w := httptest.NewRecorder()
+	req := httptest.NewRequest("GET", "/", nil)
+	logbuf := bytes.Buffer{}
+
+	e := echo.New()
+	e.Logger.SetOutput(&logbuf)
+	e.Logger.SetLevel(log.WARN)
+	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			if err := next(c); err != nil {
+				c.Logger().Info(err)
+				c.Logger().Error(err)
+				return c.String(http.StatusInternalServerError, "Internal Server Error")
+			}
+			return nil
+		}
+	})
+	e.GET("/", func(c echo.Context) error {
+		return errors.New("hogehoge")
+	})
+	e.ServeHTTP(w, req)
+
+	assert.Equal(t, 500, w.Code)
+	assert.Equal(t, "Internal Server Error", w.Body.String())
+
+	logrows := strings.Split(logbuf.String(), "\n")
+
+	assert.Equal(t, 2, len(logrows))
 }
