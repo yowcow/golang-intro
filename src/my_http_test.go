@@ -9,6 +9,7 @@ import (
 	"regexp"
 	"sync"
 	"testing"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
@@ -118,4 +119,25 @@ func TestRealHTTPRequest(t *testing.T) {
 
 	assert.Equal(t, 200, res.StatusCode)
 	assert.Equal(t, "Hi, I love foo/bar!", string(body))
+}
+
+func TestTimeoutRequest(t *testing.T) {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/hoge", func(w http.ResponseWriter, req *http.Request) {
+		time.Sleep(200 * time.Millisecond)
+		w.Header().Set("content-type", "application/json; charset=UTF-8")
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"success":true}`))
+	})
+	server := httptest.NewServer(mux)
+	defer server.Close()
+
+	client := http.Client{
+		Timeout: 100 * time.Millisecond,
+	}
+	req, _ := http.NewRequest("GET", server.URL+"/hoge", nil)
+	resp, err := client.Do(req)
+
+	assert.Nil(t, resp)
+	assert.NotNil(t, err)
 }
