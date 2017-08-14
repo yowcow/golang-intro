@@ -1,8 +1,8 @@
 .PHONY: test
 
 all:
-	rm -rf ./vendor ./Godeps
-	godep save -v ./src/...
+	rm -rf ./vendor
+	dep ensure
 
 test:
 	go test ./src/...
