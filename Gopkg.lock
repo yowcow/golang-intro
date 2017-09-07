@@ -23,13 +23,13 @@
   branch = "master"
   name = "github.com/golang/protobuf"
   packages = ["proto"]
-  revision = "1909bc2f63dc92bb931deace8b8312c4db72d12f"
+  revision = "17ce1425424ab154092bbb43af630bd647f3bb0d"
 
 [[projects]]
   name = "github.com/labstack/echo"
   packages = ["."]
-  revision = "935a60782cbbc55110e7bd4b33120e4567cbee43"
-  version = "v3.2.1"
+  revision = "cec7629194fe4bf83b0c72d9a02d340c7a1468ac"
+  version = "3.2.3"
 
 [[projects]]
   name = "github.com/labstack/gommon"
@@ -65,7 +65,7 @@
   branch = "master"
   name = "github.com/ugorji/go"
   packages = ["codec"]
-  revision = "5efa3251c7f7d05e5d9704a69a984ec9f1386a40"
+  revision = "8c0409fcbb70099c748d71f714529204975f6c3f"
 
 [[projects]]
   branch = "master"
@@ -83,13 +83,13 @@
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["acme","acme/autocert"]
-  revision = "b176d7def5d71bdd214203491f89843ed217f420"
+  revision = "81e90905daefcd6fd217b62423c0908922eadb30"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
-  revision = "e42485b6e20ae7d2304ec72e535b103ed350cc02"
+  revision = "9aade4d3a3b7e6d876cd3823ad20ec45fc035402"
 
 [[projects]]
   name = "gopkg.in/go-playground/validator.v8"
