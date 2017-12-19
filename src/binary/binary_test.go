@@ -51,13 +51,13 @@ func countBits(x uint8) (count int) {
 
 func TestCountBits(t *testing.T) {
 	// 0011 => 2
-	assert.Equal(t, 2, countBits(3))
+	assert.Equal(t, 2, countBits(0x3))
 	// 0100 => 1
-	assert.Equal(t, 1, countBits(4))
+	assert.Equal(t, 1, countBits(0x4))
 	// 1100 => 1
-	assert.Equal(t, 2, countBits(12))
+	assert.Equal(t, 2, countBits(0xC))
 	// 1111 => 4
-	assert.Equal(t, 4, countBits(15))
+	assert.Equal(t, 4, countBits(0xF))
 }
 
 func TestComplement(t *testing.T) {
@@ -86,13 +86,13 @@ func invertBits(x uint8, from, pad uint) (res uint8) {
 func TestInvertBits(t *testing.T) {
 	// given:  1100, invert bits from 1 with padding 3
 	// result: 0010
-	assert.Equal(t, uint8(2), invertBits(12, 1, 3))
+	assert.Equal(t, uint8(2), invertBits(0xC, 1, 3))
 
 	// given:  0001, invert bits from 0 with padding 2
 	// result: 0010
-	assert.Equal(t, uint8(2), invertBits(1, 0, 2))
+	assert.Equal(t, uint8(2), invertBits(0x1, 0, 2))
 
 	// given:  0001, invert bits from 0 with padding 3
 	// result: 1110
-	assert.Equal(t, uint8(14), invertBits(1, 0, 4))
+	assert.Equal(t, uint8(14), invertBits(0x1, 0, 4))
 }
