@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"regexp"
-	"sync"
 	"testing"
 	"time"
 
@@ -75,49 +74,24 @@ func TestGinAppRequest(t *testing.T) {
 	assert.Equal(200, resData.Status)
 }
 
-func startRealHTTPServer(addr string, wg *sync.WaitGroup, ch <-chan struct{}) {
-	srvmux := &http.ServeMux{}
-	srvmux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Hi, I love %s!", r.URL.Path[1:])
-	})
-	server := &http.Server{
-		Addr:    addr,
-		Handler: srvmux,
-	}
-
-	defer func() {
-		fmt.Println("Server is closing")
-		server.Close()
-		wg.Done()
-	}()
-
-	go func() {
-		server.ListenAndServe()
-	}()
-
-	fmt.Println("Server is listening")
-
-	for _ = range ch {
-	}
-}
-
 func TestRealHTTPRequest(t *testing.T) {
-	wg := &sync.WaitGroup{}
-	ch := make(chan struct{})
-
-	wg.Add(1)
-	go startRealHTTPServer(":8899", wg, ch)
+	handler := http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		fmt.Fprintf(w, "Hi, I love %s!", req.URL.Path[1:])
+	})
+	server := httptest.NewServer(handler)
+	defer server.Close()
 
 	client := &http.Client{}
-	req, _ := http.NewRequest("GET", "http://localhost:8899/foo/bar", nil)
-	res, _ := client.Do(req)
+	req, _ := http.NewRequest("GET", server.URL+"/foo/bar", nil)
+	resp, err := client.Do(req)
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close()
 
-	close(ch)
-	wg.Wait()
+	body, _ := ioutil.ReadAll(resp.Body)
 
-	body, _ := ioutil.ReadAll(res.Body)
-
-	assert.Equal(t, 200, res.StatusCode)
+	assert.Equal(t, 200, resp.StatusCode)
 	assert.Equal(t, "Hi, I love foo/bar!", string(body))
 }
 
