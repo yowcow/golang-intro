@@ -1,8 +1,8 @@
 .PHONY: test
 
 all:
-	rm -rf ./vendor
-	dep ensure -update
+	which dep || go get -u -v github.com/golang/dep/cmd/dep
+	dep ensure -v
 
 test:
 	go test ./src/...
