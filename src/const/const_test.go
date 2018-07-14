@@ -8,6 +8,12 @@ import (
 )
 
 const (
+	Zone0 = iota
+	Zone1
+	Zone2
+)
+
+const (
 	Level1 = 1 + iota
 	Level2
 	Level3
@@ -18,6 +24,12 @@ const (
 	Mode2
 	Mode3
 )
+
+func TestZones(t *testing.T) {
+	assert.Equal(t, 0, Zone0)
+	assert.Equal(t, 1, Zone1)
+	assert.Equal(t, 2, Zone2)
+}
 
 func TestLevels(t *testing.T) {
 	assert.Equal(t, 1, Level1)
