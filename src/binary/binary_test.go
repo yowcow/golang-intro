@@ -1,6 +1,8 @@
 package mybinary
 
 import (
+	"bytes"
+	"encoding/binary"
 	"fmt"
 	"testing"
 
@@ -95,4 +97,26 @@ func TestInvertBits(t *testing.T) {
 	// given:  0001, invert bits from 0 with padding 3
 	// result: 1110
 	assert.Equal(t, uint8(14), invertBits(0x1, 0, 4))
+}
+
+func TestHexToUint32Conversion(t *testing.T) {
+	data := []byte{
+		0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x01,
+		0x00, 0x00, 0x00, 0x02,
+		0x00, 0x00, 0x00, 0x03,
+	}
+	r := bytes.NewBuffer(data)
+
+	for i := 0; i < 4; i++ {
+		b := make([]byte, 4)
+		n, err := r.Read(b)
+
+		assert.Equal(t, 4, n)
+		assert.Nil(t, err)
+
+		v := binary.BigEndian.Uint32(b)
+
+		assert.Equal(t, uint32(i), v)
+	}
 }
