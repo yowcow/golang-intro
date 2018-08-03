@@ -1,6 +1,13 @@
 language: go
+
 go:
   - tip
+
+addons:
+  apt:
+    packags:
+      - cronolog
+
 before_install:
   - make
 script:
