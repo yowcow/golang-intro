@@ -5,7 +5,7 @@ go:
 
 addons:
   apt:
-    packags:
+    packages:
       - cronolog
 
 before_install:
