@@ -6,7 +6,7 @@ all: $(DEP)
 	$(GO) list -m
 
 $(DEP):
-	$(GO) get -u -v github.com/golang/dep/cmd/dep
+	curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
 
 test:
 	$(GO) test ./src/...
