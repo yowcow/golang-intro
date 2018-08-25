@@ -9,6 +9,7 @@ addons:
       - cronolog
 
 before_install:
+  - go get -u -v github.com/golang/dep/cmd/dep
   - make
 script:
   - make test
