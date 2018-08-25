@@ -1,8 +1,14 @@
-.PHONY: test
+DEP := $(GOPATH)/bin/dep
+GO := GO111MODULE=on go
 
-all:
-	which dep || go get -u -v github.com/golang/dep/cmd/dep
-	dep ensure -v
+all: $(DEP)
+	$(DEP) ensure -v
+	$(GO) list -m
+
+$(DEP):
+	$(GO) get -u -v github.com/golang/dep/cmd/dep
 
 test:
-	go test ./src/...
+	$(GO) test ./src/...
+
+.PHONY: all test
