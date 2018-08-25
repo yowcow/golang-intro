@@ -8,12 +8,7 @@ addons:
     packages:
       - cronolog
 
-env:
-  global:
-    - GO111MODULE=on
-
 before_install:
-  - go get -u -v github.com/golang/dep/cmd/dep
   - make
 script:
   - make test
