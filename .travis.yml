@@ -12,3 +12,9 @@ before_install:
   - make
 script:
   - make test
+
+deploy:
+  provider: script
+  script: echo "Hi!"
+  on:
+    branch: master
