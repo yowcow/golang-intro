@@ -2,7 +2,7 @@ GO := GO111MODULE=on go
 
 WIRE_DIRS := ./mywire
 
-all: update wire
+all:
 
 update:
 	$(GO) get -u
