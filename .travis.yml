@@ -8,7 +8,7 @@ addons:
     packages:
       - cronolog
 
-before_install:
+before_script:
   - make
 script:
   - make test
