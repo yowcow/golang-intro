@@ -1,4 +1,6 @@
 [![Build Status](https://travis-ci.org/yowcow/golang-intro.svg?branch=master)](https://travis-ci.org/yowcow/golang-intro)
 
-Go
-==
+Intro to Golang
+===============
+
+Go 1.11 or later is required.

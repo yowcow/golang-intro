@@ -4,7 +4,7 @@ all:
 	$(GO) get -u
 
 test:
-	$(GO) test ./src/...
+	$(GO) test ./...
 
 clean:
 	$(GO) clean -testcache || true
