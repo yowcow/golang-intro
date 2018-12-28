@@ -8,11 +8,13 @@ addons:
     packages:
       - cronolog
 
+env:
+  - GO111MODULE=on
+
 before_script:
   - make
 script:
   - make test
-  - make wire
 
 deploy:
   provider: script
