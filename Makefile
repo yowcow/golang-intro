@@ -1,7 +1,15 @@
 GO := GO111MODULE=on go
 
-all:
+WIRE_DIRS := ./mywire
+
+all: update wire
+
+update:
 	$(GO) get -u
+
+wire:
+	which wire || $(GO) get -u -v github.com/google/wire/cmd/wire
+	wire $(WIRE_DIRS)
 
 test:
 	$(GO) test ./...
@@ -12,4 +20,4 @@ clean:
 realclean: clean
 	$(GO) clean -modcache || true
 
-.PHONY: all test clean realclean
+.PHONY: all update wire test clean realclean
