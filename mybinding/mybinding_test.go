@@ -3,16 +3,18 @@ package mybinding
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
-	"reflect"
+	"net/url"
+	"strings"
 	"testing"
 
 	"github.com/mholt/binding"
 )
 
 type LoginForm struct {
-	ID       string `json:"id"`
+	ID       int    `json:"id"`
 	Password string `json:"password"`
 }
 
@@ -23,8 +25,9 @@ func (lf *LoginForm) FieldMap(req *http.Request) binding.FieldMap {
 			Required: true,
 		},
 		&lf.Password: binding.Field{
-			Form:     "login_password",
-			Required: true,
+			Form:         "login_password",
+			Required:     true,
+			ErrorMessage: "Password is required!!!",
 		},
 	}
 }
@@ -46,23 +49,63 @@ func TestBindingAForm(t *testing.T) {
 	svr := httptest.NewServer(handler)
 	defer svr.Close()
 
-	var client http.Client
-	resp, err := client.Get(svr.URL + "?login_id=hoge&login_password=fuga")
-	if err != nil {
-		t.Error("expected nil but got", err)
+	cases := []struct {
+		Subtest  string
+		Input    map[string]string
+		Expected string
+	}{
+		{
+			"Valid form",
+			map[string]string{
+				"login_id":       "12345",
+				"login_password": "fugafuga",
+			},
+			`{"id":12345,"password":"fugafuga"}` + "\n",
+		},
+		{
+			"Invalid form when missing login_id",
+			map[string]string{
+				"login_password": "fugafuga",
+			},
+			`[{"fieldNames":["login_id"],"classification":"RequiredError","message":"Required"}]`,
+		},
+		{
+			"Invalid form when missing login_password",
+			map[string]string{
+				"login_id": "12345",
+			},
+			`[{"fieldNames":["login_password"],"classification":"RequiredError","message":"Password is required!!!"}]`,
+		},
 	}
-	defer resp.Body.Close()
 
-	actual := new(LoginForm)
-	expected := &LoginForm{"hoge", "fuga"}
+	for _, c := range cases {
+		t.Run(c.Subtest, func(t *testing.T) {
+			query := &url.Values{}
+			for k, v := range c.Input {
+				query.Set(k, v)
+			}
 
-	dec := json.NewDecoder(resp.Body)
-	err = dec.Decode(actual)
-	if err != nil {
-		t.Error("expected nil but got", err)
-	}
+			body := strings.NewReader(query.Encode())
+			req, err := http.NewRequest("POST", svr.URL, body)
+			if err != nil {
+				t.Error("expected nil but got", err)
+			}
+			req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
-	if !reflect.DeepEqual(expected, actual) {
-		t.Errorf("expected %#v but got %#v", expected, actual)
+			var client http.Client
+			resp, err := client.Do(req)
+			if err != nil {
+				t.Error("expected nil but got", err)
+			}
+			defer resp.Body.Close()
+
+			b, err := ioutil.ReadAll(resp.Body)
+			if err != nil {
+				t.Error("expected nil but got", err)
+			}
+			if string(b) != c.Expected {
+				t.Error("expected", c.Expected, "but got", string(b))
+			}
+		})
 	}
 }
