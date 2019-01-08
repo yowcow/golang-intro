@@ -3,11 +3,66 @@ package mysync
 import (
 	"context"
 	"fmt"
+	"reflect"
+	"sync"
 	"testing"
 	"time"
 
 	"golang.org/x/sync/errgroup"
 )
+
+func TestOnce(t *testing.T) {
+	msgs := []string{}
+	f := func() {
+		msgs = append(msgs, "must be once")
+	}
+
+	var once sync.Once
+	var wg sync.WaitGroup
+
+	for i := 0; i < 10; i++ {
+		wg.Add(1)
+		go func(o *sync.Once, w *sync.WaitGroup) {
+			defer w.Done()
+			o.Do(f)
+		}(&once, &wg)
+	}
+	wg.Wait()
+
+	expected := []string{"must be once"}
+
+	if !reflect.DeepEqual(expected, msgs) {
+		t.Errorf("expected %#v but got %#v", expected, msgs)
+	}
+}
+
+func TestGoOnce(t *testing.T) {
+	msgs := []string{}
+	f := func() {
+		msgs = append(msgs, "must be once")
+	}
+
+	var once sync.Once
+	var g errgroup.Group
+
+	for i := 0; i < 10; i++ {
+		g.Go(func() error {
+			once.Do(f)
+			return nil
+		})
+	}
+	err := g.Wait()
+
+	if err != nil {
+		t.Error("expected nil but got", err)
+	}
+
+	expected := []string{"must be once"}
+
+	if !reflect.DeepEqual(expected, msgs) {
+		t.Errorf("expected %#v but got %#v", expected, msgs)
+	}
+}
 
 func TestErrGroupWithContext(t *testing.T) {
 	msgs := []string{}
