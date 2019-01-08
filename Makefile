@@ -4,6 +4,7 @@ all: update wire
 
 update:
 	go get -u
+	go mod tidy
 
 wire:
 	which wire || go get -u -v github.com/google/wire/cmd/wire
