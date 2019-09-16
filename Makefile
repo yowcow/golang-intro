@@ -3,7 +3,6 @@ WIRE_DIRS := ./mywire
 all: update wire
 
 update:
-	go get -u
 	go mod tidy
 
 wire:
